@@ -1,34 +1,31 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import ImageCarousel from './components/ImageCarousel'
+import headshot from './assets/headshot.jfif'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+    <div className="app">
+      <div className="author-col" style={{ maxWidth: '200px' }}>
+        <header>
+          <div className="header-content">
+            <h1 style={{ fontSize: '1.5rem' }}>Olive Pometsey</h1>
+            <img src={headshot} className="headshot" alt="Headshot" style={{ maxWidth: '100%' }} />
+          </div>
+        </header>
+        <h2 style={{ fontSize: '1.2rem' }}>About Me</h2>
+        <p style={{ fontSize: '0.9rem' }}>
+          Welcome to my portfolio! I am a freelance journalist with a passion for storytelling. 
+          I specialize in covering a wide range of topics including politics, culture, and human interest stories.
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <div className="covers">
+        <ImageCarousel articleDir="right"/>
+        {/* <ImageCarousel articleDir="right"/> */}
+      </div>
+    </div>
   )
 }
 

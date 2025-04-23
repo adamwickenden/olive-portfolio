@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import { auth, provider } from './firebase';
 
@@ -8,53 +8,54 @@ import HomePage from './pages/HomePage';
 
 const allowedEmails = ['adamwickenden94@gmail.com', 'olivepometsey@gmail.com'];
 
-function App() {
+function AdminRoute() {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Listen for auth state changes
-  useEffect(() => {
+    useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log('Auth state changed:', currentUser);
-      setUser(currentUser);
-      setAuthChecked(true);
+        console.log('Auth state changed:', currentUser);
+        setUser(currentUser);
+        setAuthChecked(true);
     });
 
     return () => unsubscribe();
-  }, []);
+    }, []);
 
-  // Handle login for /admin route
-  useEffect(() => {
-    if (authChecked && !user) {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          console.log('Signed in with popup:', result.user);
-          setUser(result.user);
-        })
-        .catch((error) => {
-          console.error('Popup sign-in error:', error);
-        });
+    // Handle login for /admin route
+    useEffect(() => {
+        if (authChecked && !user) {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+            console.log('Signed in with popup:', result.user);
+            setUser(result.user);
+            })
+            .catch((error) => {
+            console.error('Popup sign-in error:', error);
+            });
+        }
+    }, [authChecked, user]);
+
+    if (!authChecked){
+        return <div>Loading...</div>
     }
-  }, [authChecked, user]);
 
+    return user && allowedEmails.includes(user.email) ? <Outlet/> : <Navigate to="/" replace />
+}
+
+function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         
         {/* Protected Admin Route */}
+        <Route element={<AdminRoute/>}>
         <Route
           path="/admin"
-          element={
-            !authChecked ? (
-              <div>Loading...</div>
-            ) : user && allowedEmails.includes(user.email) ? (
-              <AdminPage />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
+          element={<AdminPage />}
         />
+        </Route>
       </Routes>
     </Router>
   );

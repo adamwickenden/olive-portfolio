@@ -1,32 +1,60 @@
-import { useState } from 'react'
-import ImageCarousel from './components/ImageCarousel'
-import headshot from './assets/headshot.jfif'
-import './App.css'
+// src/App.jsx
+import { useEffect, useState } from 'react';
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+} from 'firebase/auth';
+import { auth, provider } from './firebase';
+
+import AdminPage from './pages/AdminPage';
+import HomePage from './pages/HomePage';
+
+// Use emails, not UIDs
+const allowedEmails = ['adamwickenden94@gmail.com'];
 
 function App() {
-  useState(0)
+  const path = window.location.pathname;
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  return (
-    <div className="app">
-      <div className="author-col" style={{ maxWidth: '200px' }}>
-        <header>
-          <div className="header-content">
-            <h1 style={{ fontSize: '1.5rem' }}>Olive Pometsey</h1>
-            <img src={headshot} className="headshot" alt="Headshot" style={{ maxWidth: '100%' }} />
-          </div>
-        </header>
-        <h2 style={{ fontSize: '1.2rem' }}>About Me</h2>
-        <p style={{ fontSize: '0.9rem' }}>
-          Welcome to my portfolio! I am a freelance journalist with a passion for storytelling. 
-          I specialize in covering a wide range of topics including politics, culture, and human interest stories.
-        </p>
-      </div>
-      <div className="covers">
-        <ImageCarousel articleDir="right"/>
-        {/* <ImageCarousel articleDir="right"/> */}
-      </div>
-    </div>
-  )
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log('Auth state changed:', currentUser);
+      setUser(currentUser);
+      setAuthChecked(true);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Handle login for /admin
+  useEffect(() => {
+    if (path === '/admin' && authChecked && !user) {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log('Signed in with popup:', result.user);
+          setUser(result.user);
+        })
+        .catch((error) => {
+          console.error('Popup sign-in error:', error);
+        });
+    }
+  }, [path, authChecked, user]);
+
+  if (path === '/admin') {
+    if (!authChecked) return null;
+    if (!user) return null;
+
+    if (!allowedEmails.includes(user.email)) {
+      window.location.href = '/';
+      return null;
+    }
+
+    return <AdminPage />;
+  }
+
+  return <HomePage />;
 }
 
-export default App
+export default App;

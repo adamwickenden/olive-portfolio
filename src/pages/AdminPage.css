@@ -1,0 +1,66 @@
+/* Container styling for the Admin Page */
+.admin-page-container {
+    padding: 20px;
+  }
+  
+  /* Title and Home button styling */
+  .admin-page-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .admin-page-container button {
+    margin-bottom: 20px;
+  }
+  
+  /* Styling for the form */
+  .admin-page-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Each form group (label + input/select) */
+  .admin-page-form .form-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  /* Label styling to ensure consistency */
+  .admin-page-form label {
+    width: 120px;
+    text-align: right;
+  }
+  
+  /* Input fields and select elements */
+  .admin-page-form input,
+  .admin-page-form select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Image preview styling */
+  .admin-page-form .image-preview {
+    margin-left: 10px;
+    width: 100px;
+    height: auto;
+  }
+  
+  /* Button styling */
+  .admin-page-form button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .admin-page-form button:hover {
+    background-color: #45a049;
+  }
+  

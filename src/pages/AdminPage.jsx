@@ -4,6 +4,9 @@ import { db, storage } from '../firebase';  // Import your Firebase setup
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes } from 'firebase/storage';
 
+import { useNavigate } from 'react-router-dom';
+import './AdminPage.css';
+
 const AdminPage = () => {
   const [selectedCollection, setSelectedCollection] = useState('covers');
   const [title, setTitle] = useState('');
@@ -12,6 +15,12 @@ const AdminPage = () => {
   const [date, setDate] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
+
+  // Navigation
+  const navigate = useNavigate();
+  const handleHomeClick = () => {
+    navigate('/');
+  };
 
   // Handle the form submission
   const handleSubmit = async (e) => {
@@ -62,10 +71,12 @@ const AdminPage = () => {
   };
 
   return (
-    <div>
+    <div className="admin-page-container">
       <h2>Admin Page</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+      <button onClick={handleHomeClick}>Go to Home</button>
+
+      <form onSubmit={handleSubmit} className="admin-page-form">
+        <div className="form-group">
           <label htmlFor="collection">Select Collection</label>
           <select
             id="collection"
@@ -78,7 +89,7 @@ const AdminPage = () => {
           </select>
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="title">Title</label>
           <input
             type="text"
@@ -89,8 +100,8 @@ const AdminPage = () => {
           />
         </div>
 
-        <div>
-          <label htmlFor="link">Publication</label>
+        <div className="form-group">
+          <label htmlFor="publication">Publication</label>
           <input
             type="text"
             id="publication"
@@ -100,7 +111,7 @@ const AdminPage = () => {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="link">Link</label>
           <input
             type="url"
@@ -111,8 +122,8 @@ const AdminPage = () => {
           />
         </div>
 
-        <div>
-          <label htmlFor="link">Date</label>
+        <div className="form-group">
+          <label htmlFor="date">Date</label>
           <input
             type="date"
             id="date"
@@ -122,7 +133,7 @@ const AdminPage = () => {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label htmlFor="image">Image</label>
           <input
             type="file"
@@ -130,7 +141,7 @@ const AdminPage = () => {
             onChange={handleFileChange}
             required
           />
-          {imageUrl && <img src={imageUrl} alt="Preview" style={{ width: '100px' }} />}
+          {imageUrl && <img src={imageUrl} alt="Preview" className="image-preview" />}
         </div>
 
         <button type="submit">Add Document</button>

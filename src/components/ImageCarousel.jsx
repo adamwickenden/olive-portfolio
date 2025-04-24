@@ -18,8 +18,8 @@ const ImageCarousel = ({ articleDir }) => {
     }, []);
   
     return (
-      <div>
-        <Marquee autoFill={true} style={{ width: '1000px' }} direction={articleDir} speed={25}>
+      <div style={{ margin: 0, padding: 0 }}>
+        <Marquee autoFill={true} style={{ width: '100%' }} direction={articleDir} speed={25}>
           {articles.length > 0 ? (
             articles.map((article, index) => (
               <div key={index}>
@@ -34,7 +34,7 @@ const ImageCarousel = ({ articleDir }) => {
               </div>
             ))
           ) : (
-            <p>     &#128557;   </p>
+            <p style={{ margin: 0 }}>&#128557;</p>
           )}
         </Marquee>
       </div>

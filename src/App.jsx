@@ -48,7 +48,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        
         {/* Protected Admin Route */}
         <Route element={<AdminRoute/>}>
         <Route

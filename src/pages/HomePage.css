@@ -1,19 +1,33 @@
-.app {
+/* .home-page {
   display: flex;
+  flex-direction: column;
+} */
+
+.name-container {
+  padding-top: 20px;
+  margin-bottom: 20px;
+    text-align: center;
+}
+
+.sections-container {  
+  display: flex;
+  flex: 1;
+  gap: 20px;
   flex-direction: row;
+
 }
 
-.author-col {
-  width: 200px;
-  background-color: #f0f0f0;
-  height: 100vh;
-  padding: 20px;
+.sections-container .section {
+  flex: 1;
+  margin: 10px;
 }
 
-.covers {
-  flex-grow: 1;
+@media (min-width: 768px) {
+  .sections-container {
+    flex-direction: row;
+  }
 }
-
-.others {
-  flex-grow: 1;
+@media (max-width: 768px) {
+  .sections-container{ flex-direction: row; }
+  .image-carousel{ width: 100% }
 }

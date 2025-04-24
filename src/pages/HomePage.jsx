@@ -1,28 +1,30 @@
 import React from 'react';
 import ImageCarousel from '../components/ImageCarousel'
-import headshot from '../assets/headshot.jfif'
 import '../pages/HomePage.css'
 
 const HomePage = () => {
   
   return (
-    <div className="app">
-      <div className="author-col" style={{ maxWidth: '200px' }}>
-        <header>
-          <div className="header-content">
-            <h1 style={{ fontSize: '1.5rem' }}>Olive Pometsey</h1>
-            <img src={headshot} className="headshot" alt="Headshot" style={{ maxWidth: '100%' }} />
-          </div>
-        </header>
-        <h2 style={{ fontSize: '1.2rem' }}>About Me</h2>
-        <p style={{ fontSize: '0.9rem' }}>
-          Welcome to my portfolio! I am a freelance journalist with a passion for storytelling. 
-          I specialize in covering a wide range of topics including politics, culture, and human interest stories.
-        </p>
-      </div>
-      <div className="covers">
+    <div className="home-page">
+      <div className="carousel-container">
         <ImageCarousel articleDir="right"/>
-        {/* <ImageCarousel articleDir="right"/> */}
+      </div>
+      <div className="name-container">
+        <h1>Olive Pometsey</h1>
+      </div>
+      <div className="sections-container">
+        <div className="section">
+          <h2>Features</h2>
+          {/* Add content for features here */}
+        </div>
+        <div className="section">
+          <h2>Profiles</h2>
+          {/* Add content for profiles here */}
+        </div>
+        <div className="section">
+          <h2>Contact</h2>
+          {/* Add content for contact here */}
+        </div>
       </div>
     </div>
   );

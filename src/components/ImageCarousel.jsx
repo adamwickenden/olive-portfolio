@@ -19,7 +19,7 @@ const ImageCarousel = ({ articleDir }) => {
   
     return (
       <div>
-        <Marquee autoFill={true} style={{ width: '2000px' }} direction={articleDir} speed={25}>
+        <Marquee autoFill={true} style={{ width: '1000px' }} direction={articleDir} speed={25}>
           {articles.length > 0 ? (
             articles.map((article, index) => (
               <div key={index}>

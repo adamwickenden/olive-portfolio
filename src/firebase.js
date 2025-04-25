@@ -8,13 +8,13 @@ import { getStorage } from 'firebase/storage';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyATAdXF3tyB-p1HKjQg-P5mi0X0KhUthTo",
-  authDomain: "olive-portfolio.firebaseapp.com",
-  projectId: "olive-portfolio",
-  storageBucket: "olive-portfolio.firebasestorage.app",
-  messagingSenderId: "876030851212",
-  appId: "1:876030851212:web:fe4d57f91cfbc9214be3a9",
-  measurementId: "G-4NQZS6ZN36"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

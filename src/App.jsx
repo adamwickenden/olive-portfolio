@@ -6,7 +6,7 @@ import { auth, provider } from './firebase';
 import AdminPage from './pages/AdminPage';
 import HomePage from './pages/HomePage';
 
-const allowedEmails = ['adamwickenden94@gmail.com', 'olivepometsey@gmail.com'];
+const allowedEmails = import.meta.env.VITE_ALLOWED_USERS.split(", ");
 
 function AdminRoute() {
   const [user, setUser] = useState(null);

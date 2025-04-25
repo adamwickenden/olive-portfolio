@@ -10,7 +10,7 @@ import './AdminPage.css';
 const AdminPage = () => {
   const [selectedCollection, setSelectedCollection] = useState('covers');
   const [title, setTitle] = useState('');
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState('https://');
   const [publication, setPublication] = useState('');
   const [date, setDate] = useState('');
   const [imageFile, setImageFile] = useState(null);
@@ -51,7 +51,7 @@ const AdminPage = () => {
       alert('Document added successfully!');
       // Reset form fields
       setTitle('');
-      setLink('');
+      setLink('https://');
       setPublication('');
       setDate('');
       setImageFile(null);
@@ -84,8 +84,8 @@ const AdminPage = () => {
             onChange={(e) => setSelectedCollection(e.target.value)}
           >
             <option value="covers">covers</option>
-            <option value="print">print</option>
-            <option value="online">online</option>
+            <option value="features">features</option>
+            <option value="profiles">profiles</option>
           </select>
         </div>
 

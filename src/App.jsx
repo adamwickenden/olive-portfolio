@@ -6,8 +6,6 @@ import { auth, provider } from './firebase';
 import AdminPage from './pages/AdminPage';
 import HomePage from './pages/HomePage';
 
-const allowedEmails = import.meta.env.VITE_ALLOWED_USERS.split(", ");
-
 function AdminRoute() {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -40,7 +38,7 @@ function AdminRoute() {
         return <div>Loading...</div>
     }
 
-    return user && allowedEmails.includes(user.email) ? <Outlet/> : <Navigate to="/" replace />
+    return user && import.meta.env.VITE_ALLOWED_USERS.split(", ").includes(user.email) ? <Outlet/> : <Navigate to="/" replace />
 }
 
 function App() {

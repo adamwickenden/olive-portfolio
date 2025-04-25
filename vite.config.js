@@ -6,5 +6,9 @@ export default defineConfig({
   base: '/',
   plugins: [
     react(),
-  ]
+  ],
+  server: {
+    host: 'olive-portfolio.local',
+    port: 5173,
+  },
 })

@@ -1,5 +1,5 @@
 // src/components/AdminPage.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { db, storage } from '../firebase';  // Import your Firebase setup
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes } from 'firebase/storage';
@@ -37,10 +37,10 @@ const AdminPage = () => {
 
     try {
       // Upload the file
-      const uploadResult = await uploadBytes(imageRef, imageFile);
+      await uploadBytes(imageRef, imageFile);
 
       // 3. Create the new document in the selected Firestore collection
-      const docRef = await addDoc(collection(db, selectedCollection), {
+      await addDoc(collection(db, selectedCollection), {
         DATE: date,
         PUBLICATION: publication,
         TITLE: title,

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';  // Make sure to import Firestore from firebase.js
 import Marquee from "react-fast-marquee";
+import PropTypes from 'prop-types';
 
 const ImageCarousel = ({ articleDir }) => {
     const [articles, setArticles] = useState([]);
@@ -53,6 +54,10 @@ const ImageCarousel = ({ articleDir }) => {
         </Marquee>
       </div>
     );
+  };
+  
+  ImageCarousel.propTypes = {
+    articleDir: PropTypes.string.isRequired
   };
   
   export default ImageCarousel;

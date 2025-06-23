@@ -1,4 +1,3 @@
-import React from 'react';
 import ImageCarousel from '../components/ImageCarousel';
 import '../pages/HomePage.css';
 
@@ -15,6 +14,9 @@ const HomePage = () => {
         <div className="hero-content">
           <h1 className="name">Olive Pometsey</h1>
           <p className="tagline">Investigative Journalist & Storyteller</p>
+          <p>
+            I&apos;m a freelance journalist based in London, writing about politics, culture, and society.
+          </p>
         </div>
       </section>
 
@@ -32,7 +34,7 @@ const HomePage = () => {
           </div>
           <div className="feature-card">
             <span className="article-category">Feature</span>
-            <h3>Voices from the Frontline: Healthcare Workers' Stories</h3>
+            <h3>Voices from the Frontline: Healthcare Workers&apos; Stories</h3>
             <p>Personal accounts from healthcare professionals during the pandemic</p>
             <a href="#" className="read-more">Read Article →</a>
           </div>

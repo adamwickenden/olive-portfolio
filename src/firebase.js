@@ -5,25 +5,31 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v9-compat and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyClXKjwpGEGJjjV_9O7VqOqWmZ6m4uqRFE",
+  authDomain: "olive-portfolio.firebaseapp.com",
+  projectId: "olive-portfolio",
+  storageBucket: "olive-portfolio.firebasestorage.app",
+  messagingSenderId: "1057325844754",
+  appId: "1:1057325844754:web:fce9c1e47f1c0efc7a0c4c",
+  measurementId: "G-CXJR3QLMQP"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Analytics (but don't assign to variable since it's not used)
+getAnalytics(app);
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
-const storage = getStorage(app);
+// Initialize Firestore
+export const db = getFirestore(app);
+// Initialize Storage
+export const storage = getStorage(app);
 
-export { auth, provider, db, storage};
+export { auth, provider };

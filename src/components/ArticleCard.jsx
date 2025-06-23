@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const ArticleCard = ({ url }) => {
   const [metadata, setMetadata] = useState({
@@ -86,6 +87,10 @@ const ArticleCard = ({ url }) => {
       </a>
     </div>
   );
+};
+
+ArticleCard.propTypes = {
+  url: PropTypes.string.isRequired
 };
 
 export default ArticleCard; 

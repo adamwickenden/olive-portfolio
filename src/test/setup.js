@@ -18,7 +18,7 @@ global.fetch = vi.fn()
 
 // Mock DOMParser
 global.DOMParser = class DOMParser {
-  parseFromString(string, contentType) {
+  parseFromString() {
     return {
       querySelector: vi.fn(),
       querySelectorAll: vi.fn()

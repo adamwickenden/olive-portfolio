@@ -43,8 +43,8 @@ jobs:
 
   deploy:
     needs: test
-    # Only deploy when PR to main is merged
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
+    # Only deploy when pushing to main branch (which happens after PR merge)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     
     steps:

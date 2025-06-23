@@ -8,10 +8,16 @@ const ImageCarousel = ({ articleDir }) => {
   
     useEffect(() => {
       const fetchData = async () => {
-        // Fetching articles from Firestore
-        const querySnapshot = await getDocs(collection(db, 'covers'));
-        const data = querySnapshot.docs.map(doc => doc.data());  // Extracting data from documents
-        setArticles(data);
+        try {
+          // Fetching articles from Firestore
+          const querySnapshot = await getDocs(collection(db, 'covers'));
+          const data = querySnapshot.docs.map(doc => doc.data());  // Extracting data from documents
+          setArticles(data);
+        } catch (error) {
+          console.error('Error fetching articles:', error);
+          // Set articles to empty array so the sad face emoji shows
+          setArticles([]);
+        }
       };
   
       fetchData();
@@ -19,7 +25,7 @@ const ImageCarousel = ({ articleDir }) => {
   
     return (
       <div style={{ margin: 0, padding: 0, lineHeight: 0, display: 'block' }}>
-        <Marquee autoFill={true} style={{ width: '100%', margin: 0, padding: 0, lineHeight: 0 }} direction={articleDir} speed={25}>
+        <Marquee data-testid="marquee" autoFill={true} style={{ width: '100%', margin: 0, padding: 0, lineHeight: 0 }} direction={articleDir} speed={25}>
           {articles.length > 0 ? (
             articles.map((article, index) => (
               <div key={index} style={{ margin: 0, padding: 0, lineHeight: 0, display: 'inline-block' }}>

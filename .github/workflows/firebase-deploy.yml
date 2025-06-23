@@ -1,17 +1,50 @@
-name: Deploy to Firebase Hosting
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ['**']  # Run on all branches
   pull_request:
-    branches:
-      - main
-    types: [closed]
+    branches: ['**']  # Run on PRs to any branch
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Run tests and linting on all pushes and PRs (except when PR is just closed without merge)
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   deploy:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    needs: test
+    # Only deploy when PR to main is merged
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
     
     steps:
@@ -21,7 +54,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies

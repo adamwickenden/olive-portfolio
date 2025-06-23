@@ -13,7 +13,7 @@ const HomePage = () => {
 
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="name">Olive Pometsey - ACTIONS CHECK</h1>
+          <h1 className="name">Olive Pometsey</h1>
           <p className="tagline">Investigative Journalist & Storyteller</p>
         </div>
       </section>

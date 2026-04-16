@@ -17,6 +17,9 @@ Typical usage (run from inside `scraper/`):
     pip install playwright && playwright install chromium
     python scrape.py snapshot
 
+    # 5. Or take a full-page PNG screenshot of every article as a visual backup
+    python scrape.py screenshots
+
 Outputs land under `scraper/output/` (gitignored).
 """
 
@@ -147,7 +150,39 @@ def cmd_snapshot(args: argparse.Namespace) -> int:
     if args.limit:
         urls = urls[: args.limit]
     print(f"Rendering {len(urls)} PDFs into {pdf_dir}...", file=sys.stderr)
-    render_pdfs(urls, pdf_dir, user_agent=DEFAULT_UA)
+    bar = tqdm(total=len(urls), desc="Rendering PDFs", unit="pdf")
+    render_pdfs(
+        urls, pdf_dir, user_agent=DEFAULT_UA,
+        progress=lambda u, p: bar.update(1),
+    )
+    bar.close()
+    print("Done.")
+    return 0
+
+
+def cmd_screenshots(args: argparse.Namespace) -> int:
+    from theface.snapshot import take_screenshots
+    from theface.http import DEFAULT_UA
+
+    out_dir: Path = args.output_dir
+    shots_dir = out_dir / "screenshots"
+    session = build_session()
+    urls = _load_or_discover_urls(args, session)
+    if args.limit:
+        urls = urls[: args.limit]
+    print(
+        f"Capturing {len(urls)} full-page screenshots into {shots_dir}...",
+        file=sys.stderr,
+    )
+    bar = tqdm(total=len(urls), desc="Taking screenshots", unit="png")
+    take_screenshots(
+        urls,
+        shots_dir,
+        user_agent=DEFAULT_UA,
+        viewport_width=args.viewport_width,
+        progress=lambda u, p: bar.update(1),
+    )
+    bar.close()
     print("Done.")
     return 0
 
@@ -193,6 +228,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Render a PDF snapshot of every article (requires playwright).",
     )
     sp_snap.set_defaults(func=cmd_snapshot)
+
+    sp_shots = sub.add_parser(
+        "screenshots",
+        help=(
+            "Save a full-page PNG screenshot of every article as a visual "
+            "backup (requires playwright)."
+        ),
+    )
+    sp_shots.add_argument(
+        "--viewport-width",
+        type=int,
+        default=1280,
+        help="Browser viewport width in pixels (default 1280).",
+    )
+    sp_shots.set_defaults(func=cmd_screenshots)
 
     return p
 

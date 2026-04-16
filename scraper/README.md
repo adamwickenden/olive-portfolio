@@ -23,9 +23,13 @@ Given the contributor URL
    - `images/` — every hero/inline image, downloaded as the original
      full-resolution file (query parameters stripped from the CDN URL so we
      get the source asset, not a resized variant).
-3. **Optionally** renders a pixel-perfect PDF snapshot of every page using
-   headless Chromium (Playwright). This is the closest thing to "screenshot
-   every page" — useful as a belt-and-braces backup if the source site
+3. **Optionally** renders a pixel-perfect backup of every page using
+   headless Chromium (Playwright):
+   - `snapshot` → one A4 PDF per article, paginated.
+   - `screenshots` → one full-page PNG per article (one tall image of the
+     entire scrollable page).
+
+   Use either (or both) as a belt-and-braces backup if the source site
    disappears entirely.
 
 ## Output layout
@@ -43,8 +47,10 @@ scraper/output/
 │           ├── 00_hero.jpg
 │           ├── 01_some-image.jpg
 │           └── ...
-└── pdfs/                    # only if you run `snapshot`
-    └── lexa-gates-interview-new-album-elite-vessel.pdf
+├── pdfs/                    # only if you run `snapshot`
+│   └── lexa-gates-interview-new-album-elite-vessel.pdf
+└── screenshots/             # only if you run `screenshots`
+    └── lexa-gates-interview-new-album-elite-vessel.png
 ```
 
 `output/` is gitignored — none of the scraped content gets committed to the
@@ -116,6 +122,23 @@ python scrape.py snapshot
 Writes one PDF per article into `output/pdfs/`. This uses a real headless
 browser, so it picks up any client-rendered content that the HTML scraper
 might miss (lazy-loaded image variants, embeds, etc.).
+
+### 4. Take full-page screenshots (optional visual backup)
+
+```bash
+pip install playwright
+playwright install chromium
+python scrape.py screenshots
+```
+
+Writes one PNG per article into `output/screenshots/`. Each image is the
+entire scrollable height of the page (not just the viewport), so a long
+photo essay comes out as one tall image. Tweak `--viewport-width` if you
+want a narrower/wider capture (default 1280 px, matches a laptop).
+
+This is the simplest "if all else fails, we still have pictures of the
+pages" backup — the PNG doesn't care about broken selectors, missing
+classes, or future site changes.
 
 ## Polite behaviour
 

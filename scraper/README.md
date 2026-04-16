@@ -60,15 +60,21 @@ repo. Move the folder onto a backup drive once the scrape finishes.
 
 ```bash
 cd scraper
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
 ```
 
 Python 3.10+ is required.
+`uv` manages the local `.venv` for you, so there is no manual activation step
+and no `requirements.txt` to maintain.
 
 > **Why `brotli`?** theface.com serves Brotli-encoded responses; without the
 > `brotli` Python library, `requests` returns gibberish for the listing pages.
+
+For the browser-based backup commands, install Chromium once:
+
+```bash
+uv run playwright install chromium
+```
 
 ## Usage
 
@@ -78,7 +84,7 @@ All commands are run from inside `scraper/` and accept the same global flags
 ### 1. Discover article URLs (fast sanity check)
 
 ```bash
-python scrape.py discover
+uv run theface-scraper discover
 ```
 
 Walks pages 1–15 of the contributor index and writes the full URL list to
@@ -88,7 +94,7 @@ scrape.
 ### 2. Scrape everything
 
 ```bash
-python scrape.py scrape
+uv run theface-scraper scrape
 ```
 
 For every URL in the index, downloads HTML + Markdown + metadata + every
@@ -96,45 +102,48 @@ image. Re-running is safe — finished articles get overwritten with fresh
 copies. To process just the first few articles while you tune things:
 
 ```bash
-python scrape.py scrape --limit 3
+uv run theface-scraper scrape --limit 3
 ```
 
 To re-discover URLs (e.g. if she's published something new):
 
 ```bash
-python scrape.py scrape --refresh
+uv run theface-scraper scrape --refresh
 ```
 
 To skip image downloads (much faster, useful for a text-only first pass):
 
 ```bash
-python scrape.py scrape --skip-images
+uv run theface-scraper scrape --skip-images
 ```
 
 ### 3. Render PDF snapshots (optional)
 
 ```bash
-pip install playwright
-playwright install chromium
-python scrape.py snapshot
+uv run theface-scraper snapshot
 ```
 
 Writes one PDF per article into `output/pdfs/`. This uses a real headless
 browser, so it picks up any client-rendered content that the HTML scraper
-might miss (lazy-loaded image variants, embeds, etc.).
+might miss (lazy-loaded image variants, embeds, etc.). The PDF renderer now
+uses screen media and a slight zoom-out so the page sits a bit more naturally
+on A4. If you want to tune it further:
+
+```bash
+uv run theface-scraper snapshot --pdf-scale 0.9 --viewport-width 1366
+```
 
 ### 4. Take full-page screenshots (optional visual backup)
 
 ```bash
-pip install playwright
-playwright install chromium
-python scrape.py screenshots
+uv run theface-scraper screenshots
 ```
 
 Writes one PNG per article into `output/screenshots/`. Each image is the
 entire scrollable height of the page (not just the viewport), so a long
-photo essay comes out as one tall image. Tweak `--viewport-width` if you
-want a narrower/wider capture (default 1280 px, matches a laptop).
+photo essay comes out as one tall image. The default capture width is tighter
+than before so the article fills more of the frame. Tweak `--viewport-width`
+if you want a narrower/wider capture (default 960 px).
 
 This is the simplest "if all else fails, we still have pictures of the
 pages" backup — the PNG doesn't care about broken selectors, missing
@@ -158,7 +167,8 @@ If you hit rate limits, raise `--delay` (e.g. `--delay 3.0`).
 ```
 scraper/
 ├── README.md             # this file
-├── requirements.txt
+├── pyproject.toml        # project metadata + dependencies for uv
+├── uv.lock               # resolved dependency lockfile
 ├── scrape.py             # CLI entry point
 └── theface/
     ├── __init__.py

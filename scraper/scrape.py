@@ -3,22 +3,21 @@
 
 Typical usage (run from inside `scraper/`):
 
-    # 1. One-off install
-    python -m venv .venv && source .venv/bin/activate
-    pip install -r requirements.txt
+    # 1. Sync dependencies into the uv-managed environment
+    uv sync
 
     # 2. List every article URL across all 15 pages (sanity check, fast)
-    python scrape.py discover
+    uv run theface-scraper discover
 
     # 3. Scrape everything: HTML + Markdown + metadata + downloaded images
-    python scrape.py scrape
+    uv run theface-scraper scrape
 
     # 4. Optionally render a pixel-faithful PDF of every article
-    pip install playwright && playwright install chromium
-    python scrape.py snapshot
+    uv run playwright install chromium
+    uv run theface-scraper snapshot
 
     # 5. Or take a full-page PNG screenshot of every article as a visual backup
-    python scrape.py screenshots
+    uv run theface-scraper screenshots
 
 Outputs land under `scraper/output/` (gitignored).
 """
@@ -152,7 +151,11 @@ def cmd_snapshot(args: argparse.Namespace) -> int:
     print(f"Rendering {len(urls)} PDFs into {pdf_dir}...", file=sys.stderr)
     bar = tqdm(total=len(urls), desc="Rendering PDFs", unit="pdf")
     render_pdfs(
-        urls, pdf_dir, user_agent=DEFAULT_UA,
+        urls,
+        pdf_dir,
+        user_agent=DEFAULT_UA,
+        viewport_width=args.viewport_width,
+        scale=args.pdf_scale,
         progress=lambda u, p: bar.update(1),
     )
     bar.close()
@@ -188,6 +191,12 @@ def cmd_screenshots(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    from theface.snapshot import (
+        DEFAULT_PDF_SCALE,
+        DEFAULT_PDF_VIEWPORT_WIDTH,
+        DEFAULT_SCREENSHOT_VIEWPORT_WIDTH,
+    )
+
     p = argparse.ArgumentParser(
         description="Scrape Olive Pometsey's articles from theface.com.",
     )
@@ -227,6 +236,24 @@ def build_parser() -> argparse.ArgumentParser:
         "snapshot",
         help="Render a PDF snapshot of every article (requires playwright).",
     )
+    sp_snap.add_argument(
+        "--viewport-width",
+        type=int,
+        default=DEFAULT_PDF_VIEWPORT_WIDTH,
+        help=(
+            "Browser viewport width in pixels before printing "
+            f"(default {DEFAULT_PDF_VIEWPORT_WIDTH})."
+        ),
+    )
+    sp_snap.add_argument(
+        "--pdf-scale",
+        type=float,
+        default=DEFAULT_PDF_SCALE,
+        help=(
+            "Scale factor for the printed page; lower zooms out slightly "
+            f"(default {DEFAULT_PDF_SCALE})."
+        ),
+    )
     sp_snap.set_defaults(func=cmd_snapshot)
 
     sp_shots = sub.add_parser(
@@ -239,8 +266,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp_shots.add_argument(
         "--viewport-width",
         type=int,
-        default=1280,
-        help="Browser viewport width in pixels (default 1280).",
+        default=DEFAULT_SCREENSHOT_VIEWPORT_WIDTH,
+        help=(
+            "Browser viewport width in pixels for the capture "
+            f"(default {DEFAULT_SCREENSHOT_VIEWPORT_WIDTH})."
+        ),
     )
     sp_shots.set_defaults(func=cmd_screenshots)
 

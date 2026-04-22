@@ -1,4 +1,4 @@
-"""Scraper sub-package for archiving Olive Pometsey's articles from theface.com."""
+"""Scraper sub-package for archiving contributor articles from theface.com."""
 
 from .article import scrape_article
 from .http import build_session

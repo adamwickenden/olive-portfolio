@@ -221,6 +221,24 @@ def _slug_from_url(url: str) -> str:
     return url.rstrip("/").rsplit("/", 1)[-1] or "page"
 
 
+def partition_existing_outputs(
+    urls: Iterable[str],
+    out_dir: Path,
+    *,
+    suffix: str,
+) -> tuple[list[str], list[str]]:
+    """Split URLs into `(existing, missing)` for a given output suffix."""
+    existing: list[str] = []
+    missing: list[str] = []
+    for url in urls:
+        target = out_dir / f"{_slug_from_url(url)}{suffix}"
+        if target.exists():
+            existing.append(url)
+        else:
+            missing.append(url)
+    return existing, missing
+
+
 def _import_playwright():
     try:
         from playwright.sync_api import sync_playwright  # type: ignore
@@ -531,29 +549,48 @@ def render_pdfs(
     scale: float = DEFAULT_PDF_SCALE,
     user_agent: Optional[str] = None,
     progress: Optional[callable] = None,
-) -> None:
+    warning: Optional[callable] = None,
+) -> list[dict[str, str]]:
     """Render each URL to `out_dir/<slug>.pdf`.
 
     The PDF is built from a fully painted stitched capture of the page rather
     than Chromium's print renderer, which proved unreliable for this site's
-    fixed header and hero-image layout.
+    fixed header and hero-image layout. Existing PDFs are left untouched so
+    rerunning the command resumes from the first missing file.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
+    failures: list[dict[str, str]] = []
     with _open_page(viewport_width=viewport_width, user_agent=user_agent) as page:
         for url in urls:
             slug = _slug_from_url(url)
             target = out_dir / f"{slug}.pdf"
-            _goto_with_fallback(page, url)
-            _dismiss_overlays(page)
-            page.evaluate(_SCROLL_TO_BOTTOM_JS)
-            # Re-apply after scroll in case the CMP re-rendered.
-            page.add_style_tag(content=_HIDE_OVERLAYS_CSS)
-            page.add_style_tag(content=_PDF_CAPTURE_CSS)
-            _wait_for_capture_ready(page)
-            stitched = _capture_stitched_image(page)
-            _save_paginated_pdf(stitched, target, scale=scale)
+            if target.exists():
+                if progress is not None:
+                    progress(url, target)
+                continue
+            try:
+                _goto_with_fallback(page, url)
+                _dismiss_overlays(page)
+                page.evaluate(_SCROLL_TO_BOTTOM_JS)
+                # Re-apply after scroll in case the CMP re-rendered.
+                page.add_style_tag(content=_HIDE_OVERLAYS_CSS)
+                page.add_style_tag(content=_PDF_CAPTURE_CSS)
+                _wait_for_capture_ready(page)
+                stitched = _capture_stitched_image(page)
+                _save_paginated_pdf(stitched, target, scale=scale)
+            except Exception as exc:
+                failures.append(
+                    {
+                        "url": url,
+                        "target": str(target),
+                        "error": repr(exc),
+                    }
+                )
+                if warning is not None:
+                    warning(url, target, exc)
             if progress is not None:
                 progress(url, target)
+    return failures
 
 
 def take_screenshots(
@@ -563,24 +600,43 @@ def take_screenshots(
     viewport_width: int = DEFAULT_SCREENSHOT_VIEWPORT_WIDTH,
     user_agent: Optional[str] = None,
     progress: Optional[callable] = None,
-) -> None:
+    warning: Optional[callable] = None,
+) -> list[dict[str, str]]:
     """Capture a full-page PNG screenshot of each URL.
 
     Writes `out_dir/<slug>.png`. The screenshot covers the entire scrollable
     height of the page (`full_page=True`), not just the viewport, so a long
-    photo essay comes out as one tall image.
+    photo essay comes out as one tall image. Existing PNGs are left untouched
+    so rerunning the command resumes from the first missing file.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
+    failures: list[dict[str, str]] = []
     with _open_page(viewport_width=viewport_width, user_agent=user_agent) as page:
         for url in urls:
             slug = _slug_from_url(url)
             target = out_dir / f"{slug}.png"
-            _goto_with_fallback(page, url)
-            _dismiss_overlays(page)
-            page.evaluate(_SCROLL_TO_BOTTOM_JS)
-            # Re-apply after scroll in case the CMP re-rendered.
-            page.add_style_tag(content=_HIDE_OVERLAYS_CSS)
-            _wait_for_capture_ready(page)
-            _capture_stitched_screenshot(page, target)
+            if target.exists():
+                if progress is not None:
+                    progress(url, target)
+                continue
+            try:
+                _goto_with_fallback(page, url)
+                _dismiss_overlays(page)
+                page.evaluate(_SCROLL_TO_BOTTOM_JS)
+                # Re-apply after scroll in case the CMP re-rendered.
+                page.add_style_tag(content=_HIDE_OVERLAYS_CSS)
+                _wait_for_capture_ready(page)
+                _capture_stitched_screenshot(page, target)
+            except Exception as exc:
+                failures.append(
+                    {
+                        "url": url,
+                        "target": str(target),
+                        "error": repr(exc),
+                    }
+                )
+                if warning is not None:
+                    warning(url, target, exc)
             if progress is not None:
                 progress(url, target)
+    return failures
